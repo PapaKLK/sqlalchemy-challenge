@@ -117,6 +117,42 @@ def Temperature():
     return jsonify(tobs_list)
     return "Hi - You are at the Temperature Page"
 # End of Stations
+
+
+
+#######################################################
+### The precipitation route with date  was entered               #
+#######################################################
+@app.route("/api/v1.0/precipenter<dtentry>")
+def precip_pass_dt(dtentry):
+    session = Session(engine)
+    precip_data = session.query(Measurement.date,Measurement.prcp).filter(Measurement.date == '%dtentry').order_by(Measurement.date).all()
+    
+# Query all Measurement    
+    session.close()
+
+    # Convert list of tuples into normal list
+    #selected_precip = list(np.ravel(precip_data))
+
+    return dtentry
+#
+
+#######################################################
+### The precipitation route with start and end date  was entered               #
+#######################################################
+@app.route("/api/v1.0/precipenterse<dtstart><dtend>")
+def precip_passse_dt(dtstart,dtend):
+    session = Session(engine)
+    precip_data = session.query(Measurement.date,Measurement.prcp).filter(Measurement.date == '%dtentry').order_by(Measurement.date).all()
+    
+# Query all Measurement    
+    session.close()
+
+    # Convert list of tuples into normal list
+    #selected_precip = list(np.ravel(precip_data))
+
+    return dtend
+
 #
 if __name__ == "__main__":
     app.run(debug=True)
