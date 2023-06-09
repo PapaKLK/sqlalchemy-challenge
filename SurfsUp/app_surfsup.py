@@ -46,7 +46,9 @@ def home():
         f"Here are your available routes to choose from: <br>"
         f"Precipitation Information:  /api/v1.0/precipitation <br>"
         f"Station Information:        /api/v1.0/stations <br>"
-        f"Temperature Information:    /api/v1.0/tobs"
+        f"Temperature Information:    /api/v1.0/tobs <br>"
+        f"Add a start date           /api/v1.0/precipenterYYYY-MM-DD where YYYY-MM-DD = a valid date  <br>"
+        f"Add a start and end date   /api/v1.0/precipenterseYYYY-MM-DDYYYY-MM-DD "
     )
 #
 #################################################
