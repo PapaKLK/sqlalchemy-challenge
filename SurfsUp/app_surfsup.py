@@ -2,6 +2,7 @@
 #  Keivn Krause
 #  Surfsup JSON
 #  June 12, 2023
+#
 # Import the dependencies.
 import numpy as np
 
@@ -15,7 +16,7 @@ from flask import Flask, jsonify
 
 
 #################################################
-# Database Setup
+# Database Setup to Connect To the hawaii.sqllite DB
 #################################################
 # Create our session (link) from Python to the DB
 engine = create_engine("sqlite:///Resources/hawaii.sqlite")
@@ -60,11 +61,10 @@ def home():
 @app.route("/api/v1.0/precipitation")
 def precipitation():
     session = Session(engine)
-
-    """Return a list of all passenger names"""
-    # Query all Measurement
-    #query = text("SELECT DATE(date) as date, prcp FROM measurement where DATE(date) > '2016-08-23' and prcp <> 'None' ORDER BY date")
-    precipitation_data = session.query(Measurement.date,Measurement.prcp).filter(Measurement.date > '2016-08-23').all()
+# Query all Measurement    
+    precipitation_data = session.query(Measurement.date,Measurement.prcp).filter(Measurement.date > '2016-08-23').order_by(Measurement.date).all()
+    
+ #.order_by(Measurement.date)
 
     session.close()
 
@@ -77,14 +77,23 @@ def precipitation():
 #
 #
 #
-                        I  L E F T   R I G H T    H E R E
+#                        I  L E F T   R I G H T    H E R E
 
 #######################################################
 ### The station route was entered                     #
 #######################################################
 @app.route("/api/v1.0/stations")
 def Stations():
-    return "Hi - You are at the Stations Page"
+    session = Session(engine)
+    station_data = session.query(Station.id,Station.station,Station.name,Station.latitude,Station.longitude,Station.elevation).all()
+    station_list = list(np.ravel(station_data))
+    session.close()
+
+    return jsonify(station_list)
+
+#    return "Hi - You are at the Stations Page"
+    
+
 # End of Stations
 #
 #######################################################
@@ -92,6 +101,20 @@ def Stations():
 #######################################################
 @app.route("/api/v1.0/tobs")
 def Temperature():
+    session = Session(engine)
+
+
+# Query all Measurement    
+    tobs_data = session.query(Measurement.station,Measurement.date,Measurement.tobs).filter(Measurement.station == 'USC00519281').filter(Measurement.date > '2016-08-23').all()
+    
+ #.ORDER_by(Measurement.date)
+
+    session.close()
+
+    # Convert list of tuples into normal list
+    tobs_list = list(np.ravel(tobs_data))
+
+    return jsonify(tobs_list)
     return "Hi - You are at the Temperature Page"
 # End of Stations
 #
