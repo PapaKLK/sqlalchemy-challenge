@@ -47,8 +47,9 @@ def home():
         f"Precipitation Information:  /api/v1.0/precipitation <br>"
         f"Station Information:        /api/v1.0/stations <br>"
         f"Temperature Information:    /api/v1.0/tobs <br>"
-        f"Add a start date           /api/v1.0/precipenterYYYY-MM-DD where YYYY-MM-DD = a valid date  <br>"
-        f"Add a start and end date   /api/v1.0/precipenterseYYYY-MM-DDYYYY-MM-DD "
+        f"Add a start date           /api/v1.0/precipenter/YYYY-MM-DD   <br>"
+        f"Add a start and end date   /api/v1.0/precipenterse/YYYY-MM-DD/YYYY-MM-DD  <br>"
+        "where YYYY-MM-DD = a valid start and end date"
     )
 #
 #################################################
@@ -117,43 +118,52 @@ def Temperature():
     tobs_list = list(np.ravel(tobs_data))
 
     return jsonify(tobs_list)
-    return "Hi - You are at the Temperature Page"
+#    return "Hi - You are at the Temperature Page"
 # End of Stations
 
+###########################################################################################
+#
+#            I N T E R A C T I V E     S E C T I O N
+#
+###########################################################################################
 
-
-#######################################################
-### The precipitation route with date  was entered               #
-#######################################################
-@app.route("/api/v1.0/precipenter<dtentry>")
+############################################################################
+### The precipitation route with date  was entered  by the user            #
+###########################################################################
+@app.route("/api/v1.0/precipenter/<dtentry>")
 def precip_pass_dt(dtentry):
     session = Session(engine)
-    precip_data = session.query(Measurement.date,Measurement.prcp).filter(Measurement.date == '%dtentry').order_by(Measurement.date).all()
+    precip_data = session.query(Measurement.date,Measurement.prcp).filter(Measurement.date == '{dtentry}').order_by(Measurement.date).all()
+  #  test_data = f"session.query(Measurement.date,Measurement.prcp).filter(Measurement.date == '{dtentry}').order_by(Measurement.date).all()"
+#    precip_data = prepare_query
     
 # Query all Measurement    
     session.close()
 
     # Convert list of tuples into normal list
-    #selected_precip = list(np.ravel(precip_data))
+    selected_precip = list(np.ravel(precip_data))
+#    return test_data
 
-    return dtentry
+    return jsonify(selected_precip)
+
 #
 
 #######################################################
 ### The precipitation route with start and end date  was entered               #
 #######################################################
-@app.route("/api/v1.0/precipenterse<dtstart><dtend>")
+@app.route("/api/v1.0/precipenterse/<dtstart>/<dtend>")
 def precip_passse_dt(dtstart,dtend):
     session = Session(engine)
-    precip_data = session.query(Measurement.date,Measurement.prcp).filter(Measurement.date == '%dtentry').order_by(Measurement.date).all()
+    range_prec_data = session.query(Measurement.date,Measurement.prcp).filter(Measurement.date > '{dtstart}').filter(Measurement.date < '{dtend}').order_by(Measurement.date).all()
+    saydate = f"Here is your being date {dtstart} and here is your ending date {dtend}"
     
 # Query all Measurement    
     session.close()
 
     # Convert list of tuples into normal list
-    #selected_precip = list(np.ravel(precip_data))
+    selected_rg_precip = list(np.ravel(range_prec_data))
 
-    return dtend
+    return jsonify(selected_rg_precip)
 
 #
 if __name__ == "__main__":
