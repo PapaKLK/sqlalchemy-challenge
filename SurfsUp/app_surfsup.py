@@ -5,6 +5,8 @@
 #
 # Import the dependencies.
 import numpy as np
+import pandas as pd
+import datetime as dt
 
 import sqlalchemy
 from sqlalchemy.ext.automap import automap_base
@@ -132,19 +134,16 @@ def Temperature():
 ###########################################################################
 @app.route("/api/v1.0/precipenter/<dtentry>")
 def precip_pass_dt(dtentry):
-    session = Session(engine)
-    precip_data = session.query(Measurement.date,Measurement.prcp).filter(Measurement.date == '{dtentry}').order_by(Measurement.date).all()
-  #  test_data = f"session.query(Measurement.date,Measurement.prcp).filter(Measurement.date == '{dtentry}').order_by(Measurement.date).all()"
-#    precip_data = prepare_query
     
-# Query all Measurement    
+    session = Session(engine)
+    query = "SELECT MIN(tobs), MAX(tobs),AVG(tobs)  FROM measurement where DATE(date) >= '%s'" %dtentry
+    mma_data = engine.execute(query)
+    mma_data_df = pd.DataFrame(mma_data,columns =['min', 'max','avg'])
+    mma_data_json = mma_data_df.to_json(orient = 'records')
+
     session.close()
 
-    # Convert list of tuples into normal list
-    selected_precip = list(np.ravel(precip_data))
-#    return test_data
-
-    return jsonify(selected_precip)
+    return mma_data_json
 
 #
 
@@ -153,17 +152,17 @@ def precip_pass_dt(dtentry):
 #######################################################
 @app.route("/api/v1.0/precipenterse/<dtstart>/<dtend>")
 def precip_passse_dt(dtstart,dtend):
+
     session = Session(engine)
-    range_prec_data = session.query(Measurement.date,Measurement.prcp).filter(Measurement.date > '{dtstart}').filter(Measurement.date < '{dtend}').order_by(Measurement.date).all()
-    saydate = f"Here is your being date {dtstart} and here is your ending date {dtend}"
-    
-# Query all Measurement    
+    btwncls = f"'{dtstart}' AND '{dtend}'"
+    query = "SELECT MIN(tobs), MAX(tobs),AVG(tobs)  FROM measurement where DATE(date) BETWEEN %s" %btwncls
+    mma_data_2 = engine.execute(query)
+    mma_data_2_df = pd.DataFrame(mma_data_2,columns =['min', 'max','avg'])
+    mma_data_2_json = mma_data_2_df.to_json(orient = 'records')
     session.close()
 
-    # Convert list of tuples into normal list
-    selected_rg_precip = list(np.ravel(range_prec_data))
 
-    return jsonify(selected_rg_precip)
+    return mma_data_2_json
 
 #
 if __name__ == "__main__":
