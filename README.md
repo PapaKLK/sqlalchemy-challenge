@@ -9,3 +9,5 @@
 
       ###Data that is returned will include
       Maximum Temperature,  Minimum Temperature,  Average Temperature
+      
+      ### Screen shots from the app_surfsup.py execute can be found in PDF document "SQLALCHEMY Screen Shots from Landing Pages.pdf"
